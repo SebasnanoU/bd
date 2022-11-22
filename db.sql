@@ -1,4 +1,4 @@
-CREATE SCHEMA FULL_UNIVERSIDAD
+CREATE SCHEMA FULL_UNIVERSIDAD;
 set search_path = full_universidad, public;
 
 CREATE TABLE LIBROS (
@@ -48,10 +48,11 @@ PRIMARY KEY(idEJEMPLARES)  ,
 CREATE TABLE CARRERA (
   idCARRERA INTEGER   NOT NULL ,
   idFACULTADES INTEGER   NOT NULL ,
+  PERSONAS_DNI INTEGER   NOT NULL ,
   REG_CALIF VARCHAR(20)   NOT NULL ,
   NOMBRE VARCHAR(20)   NOT NULL   ,
 PRIMARY KEY(idCARRERA)    ,
-  FOREIGN KEY(FACULTADES_idFACULTADES)
+  FOREIGN KEY(idFACULTADES)
     REFERENCES FACULTADES(idFACULTADES),
   FOREIGN KEY(PERSONAS_DNI)
     REFERENCES PERSONAS(DNI));
@@ -128,19 +129,19 @@ PRIMARY KEY(COD, idGRUPO)    ,
 
 
 CREATE VIEW List_Estudiante_por_Gruop AS
-SELECT COD, (SELECT NOMBRE FROM personas) AS NOMBRE, IDGRUPO FROM estudiantes_has_grupos
+SELECT COD, (SELECT NOMBRE FROM personas) AS NOMBRE, IDGRUPO FROM estudiantes_has_grupos;
 
 CREATE VIEW List_Libros AS
 select nombre,titulo from personas_has_libros
 INNER join full_universidad.personas USING(dni)
-INNER join full_universidad.libros USING(idlibros)
+INNER join full_universidad.libros USING(idlibros);
 
 CREATE VIEW Notas_Estudiante AS
-select cod,(SELECT nombre  from personas)as nombre ,nota1,nota2,nota3 from estudiantes_has_grupos
+select cod,(SELECT nombre  from personas)as nombre ,nota1,nota2,nota3 from estudiantes_has_grupos;
 
 CREATE VIEW Libros_Prestados AS
 SELECT cod,(SELECT nombre  from personas),fecha_ini,fecha_fin,idejemplares 
-from ejemplares_has_estudiantes
+from ejemplares_has_estudiantes;
 
 
 CREATE ROLE COORDINADOR;
@@ -154,12 +155,12 @@ CREATE ROLE PROFESOR;
 GRANT ALL ON PROFESORES TO PROFESOR;
 GRANT ALL ON PERSONAS TO PROFESOR;
 GRANT SELECT ON LIST_LIBROS TO PROFESOR;
-GRANT SELECT ON  NOTAS_ESTUDIANTES TO PROFESORES;
+GRANT SELECT ON  NOTAS_ESTUDIANTE TO PROFESOR;
 
 CREATE ROLE ESTUDIANTE;
 GRANT ALL ON PERSONAS TO ESTUDIANTE;
 GRANT SELECT ON LIST_LIBROS TO ESTUDIANTE;
-GRANT SELECT ON  NOTAS_ESTUDIANTES TO ESTUDIANTE;
+GRANT SELECT ON  NOTAS_ESTUDIANTE TO ESTUDIANTE;
 
 CREATE ROLE BIBLIOTECARIO;
 GRANT ALL ON LIBROS TO BIBLIOTECARIO;
