@@ -228,6 +228,22 @@ $tbl_MOVIMIENTOS$ LANGUAGE plpgsql;
 CREATE trigger tbl_MOVIMIENTOS AFTER UPDATE ON MOVIMIENTOS
 FOR EACH ROW EXECUTE PROCEDURE tbl_MOVIMIENTOS();
 
+-- add extension
+CREATE EXTENSION pgcrypto;
+
+CREATE OR REPLACE FUNCTION encrypt_personas() RETURNS TRIGGER AS $encrypt_personas$
+DECLARE
+  DIRECCION VARCHAR(150) := NEW.DIRECCION;
+BEGIN
+  NEW.DIRECCION := encode(digest(DIRECCION::text, 'sha1'), 'hex');
+  RETURN NEW;
+END;
+$encrypt_personas$ LANGUAGE plpgsql;
+
+CREATE trigger encrypt_personas BEFORE INSERT ON PERSONAS
+FOR EACH ROW EXECUTE PROCEDURE encrypt_personas();
+
+
 insert into FULL_UNIVERSIDAD.facultades values (111,'INGENIERIAS');
 insert into FULL_UNIVERSIDAD.facultades values (112,'CIENCIAS ECONOMICAS');
 insert into FULL_UNIVERSIDAD.facultades values (113,'DERECHO');
